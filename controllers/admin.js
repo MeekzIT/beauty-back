@@ -71,6 +71,23 @@ const logout = async (req, res) => {
   }
 };
 
+const getMe = async (req, res) => {
+  try {
+    const { role } = req.user;
+
+    if (role == "admin") {
+      const user = await Admin.findOne({ where: { id: 1 } });
+      return res.json({ succes: true, data: user });
+    } else if (role == "superAdmin") {
+      const user = await SuperAdmin.findOne({ where: { id: 1 } });
+      return res.json({ succes: true, data: user });
+    }
+    return res.json({ error: ["Invalid credentials"] });
+  } catch (e) {
+    console.log("something went wrong", e);
+  }
+};
+
 const destroyAll = async (req, res) => {
   try {
     await User.destroy({
@@ -91,4 +108,5 @@ module.exports = {
   login,
   logout,
   destroyAll,
+  getMe,
 };
