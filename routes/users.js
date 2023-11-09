@@ -14,9 +14,24 @@ router.post("/edit-user-service", serviceController.editService);
 router.post("/add-user-service", serviceController.create);
 
 router.post("/add-user-work", userController.addWWork);
-router.post("/destroy-user-work", userController.derleteWork);
-router.get("/get-user-work", userController.getWork);
+router.post(
+  "/destroy-user-work",
+  authAdminMiddleWare,
+  userController.derleteWork
+);
+router.get("/get-user-work", authAdminMiddleWare, userController.getWork);
+router.get(
+  "/get-user-access-work",
+  authAdminMiddleWare,
+  userController.getAccessedWork
+);
 
-router.get("/calc-service", userController.calcWork);
+router.get("/calc-service", authAdminMiddleWare, userController.calcWork);
 
 module.exports = router;
+
+//ashxatanqnery toxi adminy +
+//gri admin superAdmin 
+//amisnerov resulty +
+//adminy menak nerka amsva hasvetvutyuny +
+//adminy jnji ira mot , superadmini mot ereva u patchar gri +

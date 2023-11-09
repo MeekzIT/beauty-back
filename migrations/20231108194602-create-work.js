@@ -15,6 +15,7 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
       },
+      access: Sequelize.BOOLEAN,
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

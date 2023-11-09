@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       serviceId: DataTypes.INTEGER,
       userId: DataTypes.INTEGER,
+      access: DataTypes.BOOLEAN,
     },
     {
       sequelize,

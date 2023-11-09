@@ -52,6 +52,7 @@ const addWWork = async (req, res) => {
     const work = await Work.create({
       serviceId,
       userId,
+      access: false,
     });
     const thisWork = await Work.findOne({
       where: { id: work.id },
@@ -70,10 +71,17 @@ const addWWork = async (req, res) => {
 const derleteWork = async (req, res) => {
   try {
     const { id } = req.body;
+    const { role } = req.user;
 
     const work = await Work.findOne({ where: { id } });
-    await work.destroy();
-    return res.json({ succes: true });
+    if (role == "admin") {
+      work.access = true;
+      await work.save();
+      return res.json({ succes: true });
+    } else if (role == "superAdmin") {
+      await work.destroy();
+      return res.json({ succes: true });
+    }
   } catch (e) {
     console.log("something went wrong", e);
   }
@@ -82,6 +90,8 @@ const derleteWork = async (req, res) => {
 const getWork = async (req, res) => {
   try {
     const { userId, date } = req.query;
+    const { role } = req.user;
+
     let queryObj = {};
     if (date) {
       queryObj["createdAt"] = {
@@ -104,6 +114,11 @@ const getWork = async (req, res) => {
         [Op.eq]: userId,
       };
     }
+    if (role == "admin") {
+      queryObj["access"] = {
+        [Op.eq]: false,
+      };
+    }
     const works = await Work.findAll({
       where: { ...queryObj },
       include: [
@@ -121,22 +136,36 @@ const getWork = async (req, res) => {
 const calcWork = async (req, res) => {
   try {
     const { userId, date } = req.query;
+    const { role } = req.user;
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1); // Set the date to the beginning of the month
+    startOfMonth.setHours(0, 0, 0, 0); // Set time to 00:00:00:000 for precise comparison
+
+    const endOfMonth = new Date();
+    endOfMonth.setMonth(endOfMonth.getMonth() + 1, 0); // Set the date to the last day of the current month
+    endOfMonth.setHours(23, 59, 59, 999);
     let queryObj = {};
     if (date) {
-      queryObj["createdAt"] = {
-        [Op.between]: [
-          new Date(
-            new Date(date).getFullYear(),
-            new Date(date).getMonth(),
-            new Date(date).getDate()
-          ),
-          new Date(
-            new Date(date).getFullYear(),
-            new Date(date).getMonth(),
-            new Date(date).getDate() + 1
-          ),
-        ],
-      };
+      if (role == "admin") {
+        queryObj["createdAt"] = {
+          [Op.between]: [startOfMonth, endOfMonth],
+        };
+      } else {
+        queryObj["createdAt"] = {
+          [Op.between]: [
+            new Date(
+              new Date(date).getFullYear(),
+              new Date(date).getMonth(),
+              new Date(date).getDate()
+            ),
+            new Date(
+              new Date(date).getFullYear(),
+              new Date(date).getMonth(),
+              new Date(date).getDate() + 1
+            ),
+          ],
+        };
+      }
     }
     if (userId) {
       queryObj["userId"] = {
@@ -170,6 +199,22 @@ const calcWork = async (req, res) => {
   }
 };
 
+const getAccessedWork = async (req, res) => {
+  try {
+    const works = await Work.findAll({
+      where: { access: true },
+      include: [
+        {
+          model: Service,
+        },
+      ],
+    });
+    return res.json({ succes: true, date: works });
+  } catch (e) {
+    console.log("something went wrong", e);
+  }
+};
+
 module.exports = {
   create,
   derleteUser,
@@ -179,4 +224,5 @@ module.exports = {
   derleteWork,
   getWork,
   calcWork,
+  getAccessedWork,
 };
