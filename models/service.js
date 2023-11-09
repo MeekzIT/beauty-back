@@ -27,8 +27,8 @@ module.exports = (sequelize, DataTypes) => {
   let User = sequelize.define("User");
   let Work = sequelize.define("Work");
 
-  Service.hasMany(Work, {
-    foreignKey: "userId",
+  Service.belongsTo(Work, {
+    foreignKey: "id",
   });
 
   Service.belongsTo(User, {

@@ -53,7 +53,15 @@ const addWWork = async (req, res) => {
       serviceId,
       userId,
     });
-    return res.json({ succes: true, data: work });
+    const thisWork = await Work.findOne({
+      where: { id: work.id },
+      include: [
+        {
+          model: Service,
+        },
+      ],
+    });
+    return res.json({ succes: true, data: thisWork });
   } catch (e) {
     console.log("something went wrong", e);
   }
@@ -104,16 +112,51 @@ const getWork = async (req, res) => {
         },
       ],
     });
+    return res.json({ succes: true, date: works });
+  } catch (e) {
+    console.log("something went wrong", e);
+  }
+};
+
+const calcWork = async (req, res) => {
+  try {
+    const { userId, date } = req.query;
+    let queryObj = {};
+    if (date) {
+      queryObj["createdAt"] = {
+        [Op.between]: [
+          new Date(
+            new Date(date).getFullYear(),
+            new Date(date).getMonth(),
+            new Date(date).getDate()
+          ),
+          new Date(
+            new Date(date).getFullYear(),
+            new Date(date).getMonth(),
+            new Date(date).getDate() + 1
+          ),
+        ],
+      };
+    }
+    if (userId) {
+      queryObj["userId"] = {
+        [Op.eq]: userId,
+      };
+    }
+    const works = await Work.findAll({
+      where: { ...queryObj },
+      include: [
+        {
+          model: Service,
+        },
+      ],
+    });
     const result = {
       all: 0,
       benefit: 0,
       cantora: 0,
     };
     await works.map((item) => {
-      // const thisSevice = await Service.findOne({
-      //   where: { id: item.serviceId },
-      // });
-
       result.all = result.all + Number(item.Service.price);
       result.benefit = result.benefit + Number(item.Service.benefit);
       result.cantora =
@@ -135,4 +178,5 @@ module.exports = {
   addWWork,
   derleteWork,
   getWork,
+  calcWork,
 };

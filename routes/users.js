@@ -17,6 +17,6 @@ router.post("/add-user-work", userController.addWWork);
 router.post("/destroy-user-work", userController.derleteWork);
 router.get("/get-user-work", userController.getWork);
 
-// router.get("/calc-service", serviceController.calcServiceOfUser);
+router.get("/calc-service", userController.calcWork);
 
 module.exports = router;

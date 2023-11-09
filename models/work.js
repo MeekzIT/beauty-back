@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
   let Service = sequelize.define("Service");
 
   Work.belongsTo(Service, {
-    foreignKey: "id",
+    foreignKey: "serviceId",
   });
 
   return Work;
