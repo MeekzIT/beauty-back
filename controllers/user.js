@@ -5,8 +5,8 @@ const { Op } = require("sequelize");
 
 const create = async (req, res) => {
   try {
-    const { name } = req.body;
-    const user = await User.create({ name });
+    const { name, type } = req.body;
+    const user = await User.create({ name, type });
     return res.json({ succes: true, data: user });
   } catch (e) {
     console.log("something went wrong", e);
@@ -135,14 +135,14 @@ const getWork = async (req, res) => {
 
 const calcWork = async (req, res) => {
   try {
-    const { userId, date } = req.query;
+    const { userId, date, start, end } = req.query;
     const { role } = req.user;
     const startOfMonth = new Date();
-    startOfMonth.setDate(1); // Set the date to the beginning of the month
-    startOfMonth.setHours(0, 0, 0, 0); // Set time to 00:00:00:000 for precise comparison
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
 
     const endOfMonth = new Date();
-    endOfMonth.setMonth(endOfMonth.getMonth() + 1, 0); // Set the date to the last day of the current month
+    endOfMonth.setMonth(endOfMonth.getMonth() + 1, 0);
     endOfMonth.setHours(23, 59, 59, 999);
     let queryObj = {};
     if (date) {
@@ -166,6 +166,11 @@ const calcWork = async (req, res) => {
           ],
         };
       }
+    }
+    if (start && end && role == "superAdmin") {
+      queryObj["createdAt"] = {
+        [Op.between]: [start, end],
+      };
     }
     if (userId) {
       queryObj["userId"] = {

@@ -29,9 +29,3 @@ router.get(
 router.get("/calc-service", authAdminMiddleWare, userController.calcWork);
 
 module.exports = router;
-
-//ashxatanqnery toxi adminy +
-//gri admin superAdmin 
-//amisnerov resulty +
-//adminy menak nerka amsva hasvetvutyuny +
-//adminy jnji ira mot , superadmini mot ereva u patchar gri +
