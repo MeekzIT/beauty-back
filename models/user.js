@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
   User.init(
     {
       name: DataTypes.STRING,
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      superId: DataTypes.INTEGER,
     },
     {
       sequelize,
@@ -22,7 +23,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
   let Service = sequelize.define("Service");
-
+  let Category = sequelize.define("Category");
+  User.belongsTo(Category, {
+    foreignKey: "id",
+  });
   User.hasMany(Service, {
     foreignKey: "userId",
   });

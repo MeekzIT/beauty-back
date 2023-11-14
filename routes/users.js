@@ -7,13 +7,25 @@ const authAdminMiddleWare = require("../middlewares/adminAuthMiddleware");
 router.post("/", authAdminMiddleWare, userController.create);
 router.post("/destroy", authAdminMiddleWare, userController.derleteUser);
 router.get("/", authAdminMiddleWare, userController.getAll);
-router.get("/single", userController.getSingle);
-router.get("/user-service", serviceController.getServiceOfUser);
-router.post("/destroy-user-service", serviceController.derleteService);
-router.post("/edit-user-service", serviceController.editService);
-router.post("/add-user-service", serviceController.create);
+router.get("/single", authAdminMiddleWare, userController.getSingle);
+router.get(
+  "/user-service",
+  authAdminMiddleWare,
+  serviceController.getServiceOfUser
+);
+router.post(
+  "/destroy-user-service",
+  authAdminMiddleWare,
+  serviceController.derleteService
+);
+router.post(
+  "/edit-user-service",
+  authAdminMiddleWare,
+  serviceController.editService
+);
+router.post("/add-user-service", authAdminMiddleWare, serviceController.create);
 
-router.post("/add-user-work", userController.addWWork);
+router.post("/add-user-work", authAdminMiddleWare, userController.addWWork);
 router.post(
   "/destroy-user-work",
   authAdminMiddleWare,

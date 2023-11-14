@@ -13,6 +13,8 @@ module.exports = {
         type: Sequelize.STRING,
       },
       type: Sequelize.INTEGER,
+      superId: Sequelize.INTEGER,
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

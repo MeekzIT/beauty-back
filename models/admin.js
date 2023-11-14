@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       password: DataTypes.STRING,
       token: DataTypes.STRING,
       role: DataTypes.STRING,
+      superId: DataTypes.INTEGER,
     },
     {
       sequelize,

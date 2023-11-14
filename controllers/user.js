@@ -6,7 +6,9 @@ const { Op } = require("sequelize");
 const create = async (req, res) => {
   try {
     const { name, type } = req.body;
-    const user = await User.create({ name, type });
+    const { user_id } = req.user;
+
+    const user = await User.create({ name, type, superId: user_id });
     return res.json({ succes: true, data: user });
   } catch (e) {
     console.log("something went wrong", e);
@@ -27,7 +29,8 @@ const derleteUser = async (req, res) => {
 
 const getAll = async (req, res) => {
   try {
-    const user = await User.findAll();
+    const { user_id } = req.user;
+    const user = await User.findAll({ where: { superId: user_id } });
     return res.json({ succes: true, data: user });
   } catch (e) {
     console.log("something went wrong", e);
@@ -49,10 +52,13 @@ const getSingle = async (req, res) => {
 const addWWork = async (req, res) => {
   try {
     const { serviceId, userId } = req.body;
+    const { user_id } = req.user;
+
     const work = await Work.create({
       serviceId,
       userId,
       access: false,
+      superId: user_id,
     });
     const thisWork = await Work.findOne({
       where: { id: work.id },
@@ -90,7 +96,7 @@ const derleteWork = async (req, res) => {
 const getWork = async (req, res) => {
   try {
     const { userId, date, start, end } = req.query;
-    const { role } = req.user;
+    const { role, user_id } = req.user;
 
     let queryObj = {};
     if (date) {
@@ -125,7 +131,7 @@ const getWork = async (req, res) => {
       };
     }
     const works = await Work.findAll({
-      where: { ...queryObj },
+      where: { ...queryObj, superId: user_id },
       include: [
         {
           model: Service,
@@ -141,7 +147,8 @@ const getWork = async (req, res) => {
 const calcWork = async (req, res) => {
   try {
     const { userId, date, start, end } = req.query;
-    const { role } = req.user;
+    const { role, user_id } = req.user;
+
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
@@ -183,7 +190,7 @@ const calcWork = async (req, res) => {
       };
     }
     const works = await Work.findAll({
-      where: { ...queryObj },
+      where: { ...queryObj, superId: user_id },
       include: [
         {
           model: Service,
