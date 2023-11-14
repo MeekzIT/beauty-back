@@ -89,7 +89,7 @@ const derleteWork = async (req, res) => {
 
 const getWork = async (req, res) => {
   try {
-    const { userId, date } = req.query;
+    const { userId, date, start, end } = req.query;
     const { role } = req.user;
 
     let queryObj = {};
@@ -107,6 +107,11 @@ const getWork = async (req, res) => {
             new Date(date).getDate() + 1
           ),
         ],
+      };
+    }
+    if (start && end && role == "superAdmin") {
+      queryObj["createdAt"] = {
+        [Op.between]: [start, end],
       };
     }
     if (userId) {
@@ -146,26 +151,26 @@ const calcWork = async (req, res) => {
     endOfMonth.setHours(23, 59, 59, 999);
     let queryObj = {};
     if (date) {
-      if (role == "admin") {
-        queryObj["createdAt"] = {
-          [Op.between]: [startOfMonth, endOfMonth],
-        };
-      } else {
-        queryObj["createdAt"] = {
-          [Op.between]: [
-            new Date(
-              new Date(date).getFullYear(),
-              new Date(date).getMonth(),
-              new Date(date).getDate()
-            ),
-            new Date(
-              new Date(date).getFullYear(),
-              new Date(date).getMonth(),
-              new Date(date).getDate() + 1
-            ),
-          ],
-        };
-      }
+      // if (role == "admin") {
+      //   queryObj["createdAt"] = {
+      //     [Op.between]: [startOfMonth, endOfMonth],
+      //   };
+      // } else {
+      queryObj["createdAt"] = {
+        [Op.between]: [
+          new Date(
+            new Date(date).getFullYear(),
+            new Date(date).getMonth(),
+            new Date(date).getDate()
+          ),
+          new Date(
+            new Date(date).getFullYear(),
+            new Date(date).getMonth(),
+            new Date(date).getDate() + 1
+          ),
+        ],
+      };
+      // }
     }
     if (start && end && role == "superAdmin") {
       queryObj["createdAt"] = {
