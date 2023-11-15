@@ -38,6 +38,12 @@ router.get(
   userController.getAccessedWork
 );
 
+router.post(
+  "/change-access-work",
+  authAdminMiddleWare,
+  userController.changeAccessedWork
+);
+
 router.get("/calc-service", authAdminMiddleWare, userController.calcWork);
 
 module.exports = router;

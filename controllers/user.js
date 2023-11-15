@@ -135,6 +135,7 @@ const getWork = async (req, res) => {
       include: [
         {
           model: Service,
+          include: User,
         },
       ],
     });
@@ -223,10 +224,26 @@ const getAccessedWork = async (req, res) => {
       include: [
         {
           model: Service,
+          include: User,
         },
       ],
     });
     return res.json({ succes: true, date: works });
+  } catch (e) {
+    console.log("something went wrong", e);
+  }
+};
+
+const changeAccessedWork = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const works = await Work.findOne({
+      where: { access: true, id },
+    });
+    works.access = !works.access;
+    await works.save();
+    return res.json({ succes: true });
   } catch (e) {
     console.log("something went wrong", e);
   }
@@ -242,4 +259,5 @@ module.exports = {
   getWork,
   calcWork,
   getAccessedWork,
+  changeAccessedWork,
 };
