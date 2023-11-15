@@ -117,33 +117,35 @@ const getAdmin = async (req, res) => {
 
 const editAdmin = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-
+    const { name, email, password, oldEmail } = req.body;
+    
     const superAdmin = await SuperAdmin.findOne({
-      where: { email: email.toLowerCase() },
+      where: { email: oldEmail.toLowerCase() },
     });
     let encryptedPassword = await bcrypt.hash(password, 10);
     if (superAdmin) {
       superAdmin.name = name;
       superAdmin.email = email;
-      superAdmin.password = encryptedPassword;
+      if (password !== "") {
+        superAdmin.password = encryptedPassword;
+      }
       superAdmin.save();
       return res.json({ data: superAdmin, succes: true });
     }
 
     const user = await Admin.findOne({
-      where: { email: email.toLowerCase() },
+      where: { email: oldEmail.toLowerCase() },
     });
 
     if (user) {
-      superAdmin.name = name;
-      superAdmin.email = email;
-      superAdmin.password = encryptedPassword;
+      user.name = name;
+      user.email = email;
+      if (password !== "") {
+        user.password = encryptedPassword;
+      }
       user.save();
       return res.json({ data: user, succes: true });
     }
-
-    return res.json({ error: ["Invalid credentials"] });
   } catch (e) {
     console.log("something went wrong", e);
   }

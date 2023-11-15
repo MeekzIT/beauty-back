@@ -8,7 +8,7 @@ router.get("/", authAdminMiddleWare, adminController.getMe);
 router.post("/logout", authAdminMiddleWare, adminController.logout);
 router.post("/destroyAll", authAdminMiddleWare, adminController.destroyAll);
 router.get("/get-admin", authAdminMiddleWare, adminController.getAdmin);
-router.get("/edit", authAdminMiddleWare, adminController.editAdmin);
+router.post("/edit", authAdminMiddleWare, adminController.editAdmin);
 
 module.exports = router;
 
