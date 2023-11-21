@@ -179,6 +179,21 @@ const calcWork = async (req, res) => {
         ],
       };
       // }
+    } else {
+      queryObj["createdAt"] = {
+        [Op.between]: [
+          new Date(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            new Date().getDate()
+          ),
+          new Date(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            new Date().getDate() + 1
+          ),
+        ],
+      };
     }
     if (start && end && role == "superAdmin") {
       queryObj["createdAt"] = {
@@ -197,6 +212,7 @@ const calcWork = async (req, res) => {
           model: Service,
         },
       ],
+      order: [["createdAt", "DESC"]],
     });
     const result = {
       all: 0,
