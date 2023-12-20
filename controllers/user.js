@@ -138,6 +138,7 @@ const getWork = async (req, res) => {
           include: User,
         },
       ],
+      order: [["createdAt", "DESC"]],
     });
     return res.json({ succes: true, date: works });
   } catch (e) {
